@@ -1,0 +1,58 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.eggs/
+
+# === Virtual Environments ===
+.venv/
+venv/
+env/
+ENV/
+.env.bak
+
+# === Secrets & Config ===
+config/.env
+*.env
+.env.*
+!.env.example
+
+# === Project-specific ===
+otp_store.txt
+sessions/
+_temp/
+
+# === Logs ===
+*.log
+logs/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === IDEs ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Misc ===
+*.bak
+*.tmp

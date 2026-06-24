@@ -52,7 +52,7 @@ def _run(loop: asyncio.AbstractEventLoop, coro):
 
 @app.post("/api/send-code")
 async def send_code(req: PhoneReq):
-    phone = req.phone.strip()
+    phone = req.phone.strip().replace(" ", "")
 
     # Clean up any previous session for this phone
     if phone in _state:
@@ -86,7 +86,7 @@ async def send_code(req: PhoneReq):
 
 @app.post("/api/store-otp")
 async def store_otp(req: OTPReq):
-    phone = req.phone.strip()
+    phone = req.phone.strip().replace(" ", "")
     if phone not in _state:
         raise HTTPException(400, "Session expired. Re-enter your phone number.")
 
@@ -124,6 +124,7 @@ async def store_otp(req: OTPReq):
 
 @app.get("/api/ttl")
 async def get_ttl(phone: str):
+    phone = phone.strip().replace(" ", "")
     if not OTP_FILE.exists():
         raise HTTPException(404, "No OTP store found.")
     try:

@@ -24,7 +24,7 @@ PID_SERVER=$!
 sleep 2
 
 # ── Start watcher ─────────────────────────────────────────────────────────────
-echo "[2/2] Starting watcher        → scanning otp_store.txt every 30s"
+echo "[2/2] Starting watcher        → scanning otp_store.txt every 2s"
 python watcher.py &
 PID_WATCHER=$!
 

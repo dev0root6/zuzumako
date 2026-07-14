@@ -4,7 +4,7 @@ Zuzumako is a self-contained Telegram automation and session-management system. 
 
 ---
 
-## Features
+## Feature
 
 - **Web K Interface**: Responsive, premium dark-themed web page for easy phone number submission and OTP entry.
 - **Multithreaded Session Handling**: Runs Telegram authentication sessions on isolated event loops on dedicated threads, avoiding conflict with the FastAPI web server.

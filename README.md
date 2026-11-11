@@ -1,139 +1,163 @@
 # Zuzumako
 
-Zuzumako is a self-contained Telegram automation and session-management system. It features a modern, card-based web frontend styled to mirror the **Telegram Web K** sign-in interface, coupled with a robust FastAPI backend. It streamlines session creation using Telethon, stores OTP credentials temporarily, and automates tasks such as direct-message broadcasting, message scheduling, sending, and remote deletion.
+### Telegram Phishing Simulation & Security Awareness Research
 
----
+Zuzumako is a cybersecurity research project designed to demonstrate Telegram-themed phishing techniques and the security risks associated with credential harvesting, OTP interception, session authentication, and unauthorized account access.
 
-## Feature
+## Overview
 
-- **Web K Interface**: Responsive, premium dark-themed web page for easy phone number submission and OTP entry.
-- **Multithreaded Session Handling**: Runs Telegram authentication sessions on isolated event loops on dedicated threads, avoiding conflict with the FastAPI web server.
-- **Background Automation Watcher**: Auto-scans for new credentials and triggers custom broadcasts to contacts.
-- **Dynamic Messaging Control**: Broadcaster with customizable delay limits, message count caps, and interactive revocation (delete-for-everyone).
-- **Session Exports**: Saves permanent Telethon session files (`.session`) to a dedicated directory for reuse in external automation scripts.
+The project demonstrates how a Telegram Web-style authentication interface can be replicated for controlled phishing simulations and security awareness research.
 
----
+It combines a web interface, FastAPI backend, and Telethon-based authentication components to illustrate the risks associated with entering authentication credentials into untrusted interfaces.
+
+## Research Objectives
+
+- Demonstrate Telegram-themed phishing interface techniques.
+- Understand OTP-based authentication workflows.
+- Examine the security implications of exposing authentication material.
+- Demonstrate risks associated with persistent authentication sessions.
+- Study unauthorized messaging and account misuse scenarios.
+- Improve phishing awareness and credential security education.
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Backend implementation |
+| FastAPI | HTTP API and web server |
+| Telethon | Telegram API integration |
+| HTML / CSS / JavaScript | Frontend interface |
+| AsyncIO | Asynchronous execution |
+| Threading | Background execution |
+| SQLite | Telethon session storage |
 
 ## Repository Structure
 
-- `server.py`: FastAPI backend that hosts the web client, handles static assets, and drives the initial Telethon connection flow (sending OTP requests).
-- `watcher.py`: Background worker that monitors `otp_store.txt` for newly entered OTPs, finishes authentication, saves session files, and runs automated broadcasts.
-- `auth.py`: CLI-based authentication script for manual workflows. Handles 2FA (Two-Factor Authentication) prompts.
-- `automater.py`: Script to trigger broadcasts for all active session profiles registered in the system.
-- `broadcast.py`: Modular utility to send direct messages to contact lists and auto-delete them after a defined cooldown.
-- `send.py`: Simple utility to send direct messages to users, groups, or "me" using existing sessions.
-- `delete.py`: Utility to search chat history and delete matching messages.
-- `run.sh`: Bash script to orchestrate and run both the web server and the background watcher process.
-- `ui/`: Frontend assets (HTML, custom CSS, background wallpaper, logos).
-- `config/.env`: Core environment variables (API ID, API Hash, etc.).
-- `otp_store.txt`: Temporary JSON data store for staging phone numbers, OTPs, hashes, and expiration timestamps.
+```text
+zuzumako/
+├── auth.py
+├── automater.py
+├── broadcast.py
+├── delete.py
+├── run.sh
+├── send.py
+├── server.py
+├── watcher.py
+├── DOCS.md
+├── README.md
+└── ui/
+    ├── index.html
+    ├── t-wall.png
+    └── telegramlogo.png
+```
 
----
+## Architecture
 
-## Installation & Setup
+| Component | Description |
+|---|---|
+| `ui/` | Telegram-themed demonstration interface |
+| `server.py` | FastAPI backend and authentication workflow |
+| `watcher.py` | Background authentication workflow |
+| `auth.py` | Manual authentication component |
+| `broadcast.py` | Messaging and deletion demonstration |
+| `automater.py` | Session-based automation |
+| `send.py` | Direct messaging utility |
+| `delete.py` | Message deletion utility |
+| `run.sh` | Application startup orchestration |
 
-### 1. Prerequisites
-- Python 3.8 or higher.
-- A Telegram application credentials pair (`api_id` and `api_hash`). You can obtain these from [my.telegram.org](https://my.telegram.org/).
+## Installation
 
-### 2. Install Dependencies
-Clone the repository and install the required packages:
+### Prerequisites
+
+- Python 3.8+
+- Telegram API ID
+- Telegram API Hash
+- Linux environment recommended
+
+### Install Dependencies
+
 ```bash
 pip install fastapi uvicorn telethon python-dotenv
 ```
 
-### 3. Configuration
-Create a `.env` file under the `config/` directory:
+### Configuration
+
+Create the configuration directory:
+
 ```bash
 mkdir -p config
-touch config/.env
 ```
 
-Add the following environment variables to `config/.env`:
+Create `config/.env`:
+
 ```ini
-TELEGRAM_API_ID=123456            # Your Telegram API ID
-TELEGRAM_API_HASH=your_api_hash   # Your Telegram API Hash
-OTP_TTL_SECONDS=120               # How long OTPs remain valid in the store (default: 60)
-BROADCAST_LIMIT=5                 # Limit of contacts to message ('all' or integer)
-BROADCAST_DELAY_SECONDS=60        # Delay before deleting broadcast messages
-BROADCAST_REVOKE=true             # Whether to delete messages for the recipient too
+TELEGRAM_API_ID=YOUR_API_ID
+TELEGRAM_API_HASH=YOUR_API_HASH
+
+OTP_TTL_SECONDS=120
+
+BROADCAST_LIMIT=5
+BROADCAST_DELAY_SECONDS=60
+BROADCAST_REVOKE=true
 ```
 
----
+Keep API credentials and authentication material out of version control.
 
-## Operating Instructions
+## Running the Application
 
-### Quick Start (Server + Watcher)
-Run the orchestrator script to spin up the web server and background watcher simultaneously:
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
-This launches:
-1. **Web UI** at `http://127.0.0.1:8001`
-2. **Watcher** process monitoring OTP submissions.
 
----
+The application starts:
 
-### Step-by-Step Walkthrough
+- FastAPI server: `http://127.0.0.1:8001`
+- Background authentication watcher.
 
-#### Step 1: Request OTP
-1. Open `http://127.0.0.1:8001` in your browser.
-2. Select your country code and enter your Telegram phone number (e.g., `+919999999999`).
-3. Click "Next". The backend creates a temporary Telethon client and requests an authentication code from Telegram.
+## Security Research Areas
 
-#### Step 2: Submit OTP
-1. Enter the login code received on your Telegram app.
-2. Click "Submit".
-3. The server saves the OTP, phone number, and unique Telegram `phone_code_hash` to `otp_store.txt` and starts a countdown timer on the UI.
+### 1. Phishing Interface Simulation
 
-#### Step 3: Session Creation & Automatic Broadcast
-1. The running `watcher.py` process catches the new entry in `otp_store.txt`.
-2. It uses the stored credentials to authenticate the Telegram session.
-3. The `.session` file is saved inside the `sessions/` directory.
-4. If the user doesn't have 2FA enabled, the watcher immediately sends the broadcast message configured in `broadcast.py` (or `watcher.py`) to the user's contacts and schedules their deletion.
+Demonstrates how familiar authentication interfaces can be replicated to investigate user trust and phishing susceptibility.
 
----
+### 2. OTP Authentication
 
-## CLI Utilities
+Examines OTP-based authentication, authentication hashes, and the risks of exposing verification credentials.
 
-You can also run various operations manually via command line:
+### 3. Session Security
 
-### 1. Manual Authentication & 2FA Support
-If the account has Two-Factor Authentication (2FA) enabled, the automatic watcher cannot bypass the password prompt. You must complete the login manually:
-```bash
-python auth.py --phone +919999999999
-```
-It will read the OTP from the store and prompt you inside the terminal to enter your 2FA password.
+Demonstrates how persistent authentication sessions can introduce account-security risks when improperly protected.
 
-### 2. Manual Broadcast
-To trigger a broadcast manually for all stored profiles:
-```bash
-python automater.py
-```
-Or to run a broadcast using the primary saved session:
-```bash
-python broadcast.py --delay 30
-```
-Use the `--dry-run` flag to preview matching contacts without sending any messages:
-```bash
-python broadcast.py --dry-run
-```
+### 4. Social Engineering Awareness
 
-### 3. Send Message
-To send a message using the active session:
-```bash
-python send.py --to +91XXXXXXXXXX --msg "Hello from Zuzumako"
-python send.py --to @username --msg "Hello"
-python send.py --to me --msg "Notes to self"
-```
+Highlights how attackers can exploit familiar branding and authentication workflows to manipulate users.
 
-### 4. Delete Messages
-To delete the last message you sent in a chat:
-```bash
-python delete.py --to +91XXXXXXXXXX --last
-```
-To delete all messages matching a specific keyword in a chat:
-```bash
-python delete.py --to +91XXXXXXXXXX --match "bot"
-```
+### 5. Unauthorized Account Activity
+
+Examines the potential consequences of compromised authentication sessions, including unauthorized messaging and account misuse.
+
+## Security Considerations
+
+The existing implementation handles:
+
+- Phone numbers.
+- Telegram OTP values.
+- Telegram authentication hashes.
+- Persistent Telethon session files.
+- Contact information.
+- Message-sending and deletion operations.
+
+These are highly sensitive capabilities.
+
+Research deployments must use explicitly authorized test accounts, informed participants, and isolated environments. Do not collect credentials from unsuspecting users or deploy the interface as an official Telegram authentication service.
+
+## Disclaimer
+
+Zuzumako is a cybersecurity research and phishing-awareness demonstration.
+
+It is not affiliated with, endorsed by, or associated with Telegram.
+
+All testing must be conducted in controlled environments with explicit authorization.
+
+**Research Focus:** Phishing Simulation | Credential Security | OTP Authentication | Session Security | Social Engineering Awareness
